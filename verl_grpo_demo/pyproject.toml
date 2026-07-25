@@ -1,0 +1,17 @@
+[tool.pytest.ini_options]
+# Where pytest looks for tests
+testpaths = ["tests"]
+
+# File / class / function naming conventions
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+# Show short traceback + verbose test names by default
+addopts = "-v --tb=short"
+
+# Any deprecation warnings from our own code become errors; upstream ones stay warnings
+filterwarnings = [
+    "error::DeprecationWarning:evaluation.*",
+    "error::DeprecationWarning:utils.*",
+]

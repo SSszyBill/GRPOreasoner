@@ -1,0 +1,115 @@
+# version: v1
+# frozen_at: 2026-07-03
+# note: "Frozen evaluation criteria for 4090_grpo_multisource_v1. DO NOT MODIFY. If changed, bump to v2 and rerun baseline."
+
+# eval_sets:
+#   - name: gsm8k_test
+#     path: data/gsm8k/test.parquet
+#     data_source: openai/gsm8k
+#     size: 1319
+#   - name: math500
+#     path: data/math500/test.parquet
+#     data_source: math500
+#     size: 500
+
+# metrics:
+#   primary: pass_at_1          # greedy correctness, comparable to public leaderboards
+#   secondary:
+#     - maj_at_8                # majority vote over 8 samples
+#     - format_rate             # #### / \boxed{} hit rate, tracked separately
+#   reference: total_reward     # correctness + 0.1 * format, matches training objective
+
+# sampling:
+#   pass_at_1:
+#     do_sample: false
+#     temperature: 0.0
+#     top_p: 1.0
+#     n: 1
+#   maj_at_8:
+#     do_sample: true
+#     temperature: 1.0
+#     top_p: 1.0
+#     n: 8
+#     seed: 42
+
+# generation:
+#   max_new_tokens: 2048
+#   stop_tokens: ["<|im_end|>", "<|endoftext|>"]
+
+# scoring:
+#   module: utils.reward_multi
+#   entry: compute_score
+#   correctness_only_for: [pass_at_1, maj_at_8]
+#   full_reward_for: [total_reward]
+#   format_metric: format_rate
+#   routes:
+#     openai/gsm8k: gsm8k        # #### number + numeric equality
+#     math500: math              # verl reward_score.math, \boxed{} + MATH normalization
+
+# engine:
+#   backend: vllm
+#   dtype: bfloat16
+#   tensor_parallel_size: 1
+#   gpu_memory_utilization: 0.85
+
+version: "v2"
+frozen_at: "2026-07-07"
+note: |
+  v2 changes from v1 (baseline not yet run; safe to bump):
+  - Dropped maj@8 to save 8x wall-time. maj-vote info still available in
+    training rollout logs (n=8).
+  - Reduced gsm8k_test 1319 → 500 (seed=42 subsample, frozen as a file)
+  - Reduced math500 500 → 200 (seed=42 subsample, frozen as a file)
+  Subsampling is a *physical parquet file* (test_subset_XXX_seed42.parquet),
+  not a runtime sample, so baseline and post-training deterministically read
+  the same rows. DO NOT MODIFY. If changed, bump to v3 and rerun baseline.
+
+eval_sets:
+  - name: gsm8k_test
+    path: data/gsm8k/test_subset_500_seed42.parquet
+    data_source: openai/gsm8k
+    size: 500
+  - name: math500
+    path: data/math500/test_subset_200_seed42.parquet
+    data_source: math500
+    size: 200
+
+metrics:
+  primary: pass_at_1              # greedy correctness, comparable to public leaderboards
+  secondary:
+    - format_rate                 # #### / \boxed{} hit rate, tracked separately
+    - maj_at_8 #removed in v2
+  reference: total_reward         # correctness + 0.1 * format, matches training objective
+
+sampling:
+  pass_at_1:
+    do_sample: false
+    temperature: 0.0
+    top_p: 1.0
+    n: 1
+  maj_at_8:
+    do_sample: true
+    temperature: 1.0
+    top_p: 1.0
+    n: 1
+    seed: 42
+
+generation:
+  max_new_tokens: 2048
+  stop_tokens: ["<|im_end|>", "<|endoftext|>"]
+
+scoring:
+  module: utils.reward_multi
+  entry: compute_score
+  correctness_only_for: [pass_at_1]     # v2: removed maj_at_8 from this list
+  full_reward_for: [total_reward]
+  format_metric: format_rate
+  routes:
+    openai/gsm8k: gsm8k             # #### number + numeric equality
+    math500: math                   # verl reward_score.math, \boxed{} + MATH normalization
+
+engine:
+  backend: vllm
+  dtype: bfloat16
+  tensor_parallel_size: 1
+  gpu_memory_utilization: 0.85

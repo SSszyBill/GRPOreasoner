@@ -1,0 +1,29 @@
+# configs/data.yaml — Training mix config for 4090_grpo_multisource_v1
+# Consumed by scripts/finalize_mix.py to produce data/train_final/train.parquet.
+#
+# Change any value → rerun scripts.finalize_mix.
+# manifest.json records the sha256 of this file so post-training comparisons
+# can prove which mix produced which model.
+
+version: v1
+
+# Shuffle seed. Also derives per-source down-sampling seed deterministically
+# via random.Random(f"{seed}:{source_name}").
+seed: 42
+
+# Global filter: drop pass_rate == 0 (too hard) and pass_rate == 1 (too easy).
+# Both extremes have zero within-group reward variance -> no GRPO gradient.
+# Widen (e.g., 0.1 / 0.9) later if you want to concentrate on medium difficulty.
+pass_rate_range:
+  min_exclusive: 0.0
+  max_exclusive: 1.0
+
+# Per-source take. Use "all" or a positive int.
+# Initial estimate; revisit after seeing bucketed/stats.json histograms.
+sources:
+  gsm8k:
+    take: 5000         # small pool (~7k after filter), keep everything
+  numinamath:
+    take: 10000       # ~30k pool; cap to control cost & cn_k12 dominance
+  countdown:
+    take: 4000        # program-generated, don't need many

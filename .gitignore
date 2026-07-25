@@ -1,0 +1,99 @@
+.env
+.venv/
+venv/
+ENV/
+env/
+*.env
+
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.pyre/
+.python-version
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Distribution / packaging
+build/
+dist/
+.eggs/
+*.egg-info/
+*.egg
+*.whl
+
+# Python caches and artifacts
+*.so
+*.dylib
+*.dll
+*.pyd
+
+# Logs and databases
+*.log
+*.sqlite3
+*.db
+*.db-journal
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE/editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Temporary files
+tmp/
+*.tmp
+*.temp
+*.swp
+*~
+
+# Cache directories
+pip_cache/
+ray/
+hf_cache/
+checkpoints/
+data/
+
+# Model weights and large training outputs
+*.pt
+*.pth
+*.bin
+*.ckpt
+*.safetensors
+*.npz
+*.h5
+*.hdf5
+*.tar.gz
+*.zip
+*.tgz
+
+# Hugging Face / model cache
+**/cache/huggingface/
+**/.cache/huggingface/
+
+# Experiment outputs
+**/results/
+**/outputs/
+**/logs/
+
+# Other generated files
+*.orig
+*.rej
+
+# Keep repository source files and config, ignore local caches and large artifacts
+
+**/wandb/
+# Runtime artifacts
+**/wandb/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+outputs/
+checkpoints/
+clear

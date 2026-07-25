@@ -1,0 +1,38 @@
+# configs/train.yaml — verl trainer identity for 4090_grpo_multisource_v1
+# Extends verl's ppo_trainer.yaml. This file only encodes ALGORITHM IDENTITY
+# (what makes this "GRPO with KL-as-loss"). Tunable hyperparameters live in
+# scripts/run_grpo.sh as CLI overrides, following verl's own recipe style.
+
+version: v1
+
+hydra:
+  searchpath:
+    - pkg://verl.trainer.config
+
+defaults:
+  - ppo_trainer
+  - _self_
+
+# GRPO uses group-normalized advantage; KL enters as an actor loss term
+# (rather than being baked into reward). These fields together define
+# "we are doing GRPO", not something you'd tune.
+algorithm:
+  adv_estimator: grpo
+  use_kl_in_reward: False
+  norm_adv_by_std_in_grpo: True
+
+actor_rollout_ref:
+  actor:
+    use_kl_loss: True
+    kl_loss_type: low_var_kl
+  rollout:
+    name: vllm
+
+# Custom reward function used by NaiveRewardManager. `path` is injected by
+# run.sh (env-dependent); `name` is the function symbol in that file.
+custom_reward_function:
+  name: compute_score
+
+trainer:
+  critic_warmup: 0        # GRPO has no critic → no warmup
+  logger: [console, wandb]       # smoke: console only, no wandb
