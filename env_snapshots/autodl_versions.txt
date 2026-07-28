@@ -1,0 +1,23 @@
+Python
+Python 3.10.20
+Conda
+conda 24.4.0
+Pip
+pip 24.3.1 from /root/miniconda3/envs/verl041/lib/python3.10/site-packages/pip (python 3.10)
+Torch
+torch 2.6.0+cu124 cuda 12.4 cuda_available False
+vLLM
+/root/miniconda3/envs/verl041/lib/python3.10/site-packages/transformers/utils/hub.py:105: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+INFO 07-28 15:55:25 [__init__.py:243] No platform detected, vLLM is running on UnspecifiedPlatform
+vllm 0.8.5.post1
+Ray
+ray 2.42.1
+Transformers
+/root/miniconda3/envs/verl041/lib/python3.10/site-packages/transformers/utils/hub.py:105: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+transformers 4.51.3
+NVIDIA SMI
+No devices were found
+System
+Linux autodl-container-de2a45a334-295ddbdf 5.15.0-94-generic #104-Ubuntu SMP Tue Jan 9 15:25:40 UTC 2024 x86_64 x86_64 x86_64 GNU/Linux
