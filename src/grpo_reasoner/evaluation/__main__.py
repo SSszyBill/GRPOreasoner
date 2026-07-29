@@ -1,5 +1,5 @@
 """Hydra entry point for python -m grpo_reasoner.evaluation."""
-from future import annotations
+from __future__ import annotations
 from pathlib import Path
 import hydra
 from hydra.core.hydra_config import HydraConfig

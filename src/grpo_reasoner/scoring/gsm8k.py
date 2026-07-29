@@ -3,7 +3,7 @@ Format and correctness are decoupled:
 correct answer without '####' still earns correctness*score
 wrong answer with    '####' still earns format*format_score
 """
-from future import annotations
+from __future__ import annotations
 import re
 
 def extract_answer(completion: str) -> str | None:

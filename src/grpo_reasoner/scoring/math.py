@@ -3,7 +3,7 @@ Correctness delegates to verl.utils.reward_score.math, which handles MATH
 normalization (frac, sqrt, boxed unwrapping, etc.). If verl is not
 importable, correctness silently falls back to 0.
 """
-from future import annotations
+from __future__ import annotations
 from grpo_reasoner.scoring._boxed import has_boxed, last_boxed
 
 def extract_answer(completion: str) -> str | None:

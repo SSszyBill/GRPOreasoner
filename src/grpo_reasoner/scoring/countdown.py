@@ -2,7 +2,7 @@
 Accepts LaTeX-form answers (\times, \cdot, \div, \left, \right, ...)
 and equation-form answers like \boxed{24 = 3 \times 8}.
 """
-from future import annotations
+from __future__ import annotations
 import ast
 import re
 from grpo_reasoner.scoring._boxed import last_boxed
@@ -42,21 +42,21 @@ def score(
         expr = segment.strip()
         if not expr or not re.fullmatch(r"[0-9+*/() -]+", expr):
             continue
-    used = sorted(int(token) for token in re.findall(r"[0-9]+", expr))
-    if used != required_numbers_sorted:
-        continue
-    try:
-        value = _safe_eval(expr)
-    except Exception:
-        continue
-    if abs(float(value) - target) < 1e-6:
-        return score + format_reward
+        used = sorted(int(token) for token in re.findall(r"[0-9]+", expr))
+        if used != required_numbers_sorted:
+            continue
+        try:
+            value = _safe_eval(expr)
+        except Exception:
+            continue
+        if abs(float(value) - target) < 1e-6:
+            return score + format_reward
     return 0.0 + format_reward
 
 def _clean_latex(text: str) -> str:
     for junk in (_BS + "left", _BS + "right", _BS + "!", _BS + ",", _BS + ";"):
         text = text.replace(junk, "")
-    text = text.replace(_BS + "times", "").replace(_BS + "cdot", "").replace(_BS + "div", "/")
+    text = text.replace(_BS + "times", "*").replace(_BS + "cdot", "*").replace(_BS + "div", "/")
     text = text.replace("{", "(").replace("}", ")")
     return text
 def _safe_eval(expr: str):

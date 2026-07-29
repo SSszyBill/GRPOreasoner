@@ -2,7 +2,7 @@
 This is the ONLY module external callers should use (via
 from grpo_reasoner.scoring import compute_score, extract_answer).
 """
-from future import annotations
+from __future__ import annotations
 from grpo_reasoner.scoring import countdown, gsm8k, math
 _GSM8K_SOURCES = frozenset({"openai/gsm8k", "gsm8k"})
 _MATH_SOURCES = frozenset({"numina_math", "math500", "math"})
