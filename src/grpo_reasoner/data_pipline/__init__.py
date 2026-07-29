@@ -1,0 +1,1 @@
+"""Reusable data-construction logic with no machine-specific default paths."""
