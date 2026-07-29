@@ -1,0 +1,14 @@
+# @package _global_
+defaults:
+  - grpo_multisource_v1
+  - _self_
+
+actor_rollout_ref:
+  actor:
+    lora:
+      rank: 32
+      alpha: 32
+      target_modules: [q_proj, k_proj, v_proj, o_proj]
+
+trainer:
+  experiment_name: grpo_lora_v1

@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "grpo-reasoner"
+version = "0.1.0"
+description = "GRPO training/eval pipeline for math reasoning."
+requires-python = ">=3.10"
+# 故意留空 dependencies:
+# torch / vllm / verl / flash-attn / transformers 都是 environment 手工管理的,
+# 写进 pyproject 会让 pip 想去重新解析,踩过一次坑了(见 GRPO Smoke Test 页面 §核心库版本不兼容)
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+# --- src layout 关键三件套 ---
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["grpo_reasoner*"]
+
+# --- pytest 配置(把 verl_grpo_demo/pyproject.toml 的内容合过来 + 改路径前缀) ---
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+filterwarnings = [
+    "error::DeprecationWarning:grpo_reasoner.*",
+]

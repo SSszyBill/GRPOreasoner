@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Sequence
 
 from grpo_reasoner.evaluation.scorer import ScoredGeneration
-from grpo_reasoner.rewards import reward_multi
+from grpo_reasoner.scoring import compute_score, extract_answer
 
 
 @dataclass(frozen=True)
@@ -20,21 +20,6 @@ class EvalSetMetrics:
     format_rate: float
     total_reward_greedy: float
     total_reward_sampled_mean: float
-
-
-def extract_answer(data_source: str, completion: str) -> str | None:
-    """Extract the model's proposed answer from a completion string."""
-    if data_source == "openai/gsm8k":
-        strict_answer = reward_multi.gsm8k_extract_solution(completion, method="strict")
-        if strict_answer is not None:
-            return reward_multi._gsm8k_normalize(strict_answer)
-        flexible_answer = reward_multi.gsm8k_extract_solution(completion, method="flexible")
-        return reward_multi._gsm8k_normalize(flexible_answer) if flexible_answer else None
-
-    if data_source in ("math500", "numina_math", "countdown"):
-        return reward_multi._last_boxed(completion)
-
-    return None
 
 
 def _synthesize_completion(data_source: str, extracted_answer: str) -> str:
@@ -73,7 +58,7 @@ def compute_maj_at_k(scored_generations: Sequence[ScoredGeneration]) -> float:
             scored.data_source, majority_answer,
         )
 
-        judged_score = reward_multi.compute_score(
+        judged_score = compute_score(
             scored.data_source,
             synthesized_completion,
             scored.ground_truth,
@@ -81,6 +66,7 @@ def compute_maj_at_k(scored_generations: Sequence[ScoredGeneration]) -> float:
             format_score=0.0,
             score=1.0,
         )
+
         if judged_score > 0.5:
             correct_count += 1
 

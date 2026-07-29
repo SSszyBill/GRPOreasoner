@@ -1,0 +1,20 @@
+# @package _global_
+defaults:
+  - _base
+  - _self_
+
+data:
+  train_files: ${paths.rl_root}/data/train_final/multisource_v1.parquet
+  val_files: ${paths.rl_root}/data/gsm8k/test.parquet
+
+actor_rollout_ref:
+  model:
+    path: Qwen/Qwen2.5-1.5B-Instruct
+
+trainer:
+  experiment_name: grpo_multisource_v1
+  default_local_dir: ${paths.rl_root}/checkpoints/${trainer.experiment_name}
+
+# 让 hydra.run.dir 用到 experiment_name
+run:
+  name: ${trainer.experiment_name}

@@ -97,3 +97,14 @@ __pycache__/
 outputs/
 checkpoints/
 clear
+
+# runs/ 目录内容不进 git,但保留目录本身
+runs/*
+!runs/.gitkeep
+
+# hydra 生成的 .hydra 也别进
+**/.hydra/
+
+# 本地环境覆盖
+.env.local
+env.local.sh

@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from typing import Sequence
 
 from grpo_reasoner.evaluation.generator import SampleGeneration
-from grpo_reasoner.rewards import reward_multi
+from grpo_reasoner.scoring import compute_score
 
 
 @dataclass(frozen=True)
@@ -43,17 +43,13 @@ def score_completion(
     extra_info: dict | None = None,
 ) -> ScoredCompletion:
     """Compute (correctness, format_ok, total_reward) for one completion."""
-    correctness = reward_multi.compute_score(
+    correctness = compute_score(
         data_source, completion, ground_truth,
-        extra_info=extra_info,
-        format_score=0.0,
-        score=1.0,
+        extra_info=extra_info, format_score=0.0, score=1.0,
     )
-    format_ok = reward_multi.compute_score(
+    format_ok = compute_score(
         data_source, completion, ground_truth,
-        extra_info=extra_info,
-        format_score=1.0,
-        score=0.0,
+        extra_info=extra_info, format_score=1.0, score=0.0,
     )
     total_reward = correctness + 0.1 * format_ok
     return ScoredCompletion(

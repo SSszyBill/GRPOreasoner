@@ -1,0 +1,42 @@
+# @package _global_
+defaults:
+  - /base
+  - _self_
+
+algorithm:
+  adv_estimator: grpo
+
+data:
+  max_prompt_length: 512
+  max_response_length: 512
+  train_batch_size: 8
+
+actor_rollout_ref:
+  actor:
+    optim: { lr: 1.0e-6 }
+    ppo_mini_batch_size: 4
+    ppo_micro_batch_size_per_gpu: 1
+    use_kl_loss: true
+    kl_loss_coef: 0.001
+  rollout:
+    name: vllm
+    n: 2
+    tensor_model_parallel_size: 1
+    gpu_memory_utilization: 0.3
+    log_prob_micro_batch_size_per_gpu: 1
+  ref:
+    log_prob_micro_batch_size_per_gpu: 1
+
+trainer:
+  logger: ["console", "wandb"]
+  project_name: grpo_reasoner
+  n_gpus_per_node: 1
+  nnodes: 1
+  save_freq: 5
+  test_freq: 5
+  total_epochs: 1
+  val_before_train: true
+
+custom_reward_function:
+  path: ${paths.reward_adapter}
+  name: compute_score

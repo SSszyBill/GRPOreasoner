@@ -1,0 +1,36 @@
+# 真正跨 train / eval 共享的东西:环境路径 + hydra 运行时行为
+paths:
+  rl_root: ${oc.env:RL_ROOT}
+  hf_home: ${oc.env:HF_HOME}
+  verl_repo: ${oc.env:VERL_REPO}
+  reward_adapter: ${paths.rl_root}/GRPOreasoner/src/grpo_reasoner/training/reward_adapter.py
+
+hydra:
+  run:
+    # 每次执行落盘的目录。train 和 eval 都会写到这里,靠 experiment_name/tag 区分
+    dir: ${oc.env:PWD}/runs/${now:%Y%m%d_%H%M%S}_${run.name}
+  output_subdir: .hydra
+  job:
+    chdir: false
+  # ⬇️ 让 hydra 自己接管日志,不再靠 shell 里 tee
+  job_logging:
+    version: 1
+    formatters:
+      simple:
+        format: "[%(asctime)s][%(levelname)s] %(message)s"
+    handlers:
+      console:
+        class: logging.StreamHandler
+        formatter: simple
+        stream: ext://sys.stdout
+      file:
+        class: logging.FileHandler
+        formatter: simple
+        filename: ${hydra.run.dir}/training.log
+    root:
+      level: INFO
+      handlers: [console, file]
+
+# 默认的 run 标识符,train/eval 覆盖它
+run:
+  name: unnamed_run

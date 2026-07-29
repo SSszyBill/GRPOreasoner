@@ -1,0 +1,67 @@
+defaults:
+  - /base
+  - _self_
+
+version: v2
+frozen_at: "2026-07-07"
+
+# 用于 hydra.run.dir 里的 run.name
+run:
+  name: eval_frozen_v1
+
+eval_sets:
+  - name: gsm8k_test
+    path: data/gsm8k/test_subset_500_seed42.parquet
+    data_source: openai/gsm8k
+    size: 500
+  - name: math500
+    path: data/math500/test_subset_200_seed42.parquet
+    data_source: math500
+    size: 200
+
+metrics:
+  primary: pass_at_1              # greedy correctness, comparable to public leaderboards
+  secondary:
+    - format_rate                 # #### / \boxed{} hit rate, tracked separately
+    - maj_at_8                    #removed in v2
+  reference: total_reward         # correctness + 0.1 * format, matches training objective
+
+sampling:
+  pass_at_1:
+    do_sample: false
+    temperature: 0.0
+    top_p: 1.0
+    n: 1
+  maj_at_8:
+    do_sample: true
+    temperature: 1.0
+    top_p: 1.0
+    n: 1
+    seed: 42
+
+generation:
+  max_new_tokens: 2048
+  stop_tokens: ["<|im_end|>", "<|endoftext|>"]
+
+scoring:
+  # NOTE: `module` and `entry` are legacy config from v1 draft;
+  # the eval harness now imports scoring directly via
+  # `from grpo_reasoner.scoring import reward_multi`, so these keys are
+  # not read at runtime. Kept for provenance; safe to remove in v3.
+  correctness_only_for: [pass_at_1]     # v2: removed maj_at_8 from this list
+  full_reward_for: [total_reward]
+  format_metric: format_rate
+  routes:
+    openai/gsm8k: gsm8k             # #### number + numeric equality
+    math500: math                   # verl reward_score.math, \boxed{} + MATH normalization
+
+engine:
+  backend: vllm
+  dtype: bfloat16
+  tensor_parallel_size: 1
+  gpu_memory_utilization: 0.85
+
+# 运行时才会填的字段,通过 CLI 传入,例:model=/path/to/qwen tag=post_lora
+model: ???        # ??? = hydra 语法:必填,不给会报错
+tag: untagged
+out_dir: null     # null 表示不写盘,只 print metrics
